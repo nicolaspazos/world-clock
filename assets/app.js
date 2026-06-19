@@ -7,6 +7,45 @@
    ============================================================ */
 'use strict';
 
+/* ---------- search helpers (accent-insensitive + country aliases) ---------- */
+// Lower-case and strip diacritics so "sao paulo" matches "São Paulo", etc.
+const _norm = s => (s || '').toString().normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
+// Common alternate names → so "USA", "UK", "Emirates", "Holland", "Korea" all hit.
+const COUNTRY_ALIASES = {
+  'United States': 'usa us america united states',
+  'United Kingdom': 'uk britain great britain england',
+  'UAE': 'uae emirates united arab emirates',
+  'Saudi Arabia': 'ksa saudi',
+  'South Korea': 'korea rok',
+  'South Africa': 'rsa',
+  'Czechia': 'czech republic',
+  'Netherlands': 'holland',
+  'Türkiye': 'turkey turkiye',
+  'Germany': 'deutschland',
+  'Spain': 'espana',
+  'Italy': 'italia',
+  'Brazil': 'brasil',
+  'China': 'prc mainland',
+  'Hong Kong': 'hk',
+  'Australia': 'oz aus',
+  'New Zealand': 'nz aotearoa',
+  'Ireland': 'eire'
+};
+// Lower score = better match; -1 = no match. Ranks city-name hits above country hits.
+function scoreCity(c, q){
+  if(!q) return 0;
+  const cc = c.cc.toLowerCase();
+  if(cc === q) return 0;                                   // exact country code (e.g. "sg", "au")
+  const city = _norm(c.city);
+  const hay = _norm(`${c.city} ${c.country} ${COUNTRY_ALIASES[c.country] || ''}`);
+  const tokens = hay.split(/\s+/);
+  if(city.startsWith(q)) return 1;                         // city begins with query
+  if(tokens.some(t => t.startsWith(q))) return 2;          // a country/alias/word begins with query
+  if(city.includes(q)) return 3;                           // city contains query
+  if(hay.includes(q)) return 4;                            // country/alias contains query
+  return -1;
+}
+
 /* ---------- state ---------- */
 const LS_KEY = 'glint.sales.clock.v1';
 const byId = Object.fromEntries(CITY_DB.map(c => [c.id, c]));
@@ -552,10 +591,14 @@ function bindControls(){
   function closePalette(){ scrim.hidden = true; }
   function renderResults(q){
     const has = new Set(state.cities.map(c => c.id));
-    const norm = q.trim().toLowerCase();
-    matches = CITY_DB.filter(c =>
-      !norm || c.city.toLowerCase().includes(norm) || c.country.toLowerCase().includes(norm) || c.cc.toLowerCase() === norm
-    ).slice(0, 60);
+    const norm = _norm(q);
+    const scored = [];
+    CITY_DB.forEach((c, i) => {
+      const s = norm ? scoreCity(c, norm) : 0;
+      if(s >= 0) scored.push({ c, s, i });
+    });
+    scored.sort((a, b) => a.s - b.s || a.i - b.i);   // best match first, then DB order
+    matches = scored.slice(0, 80).map(x => x.c);
     selIdx = 0;
     if(!matches.length){ results.innerHTML = '<li class="r-none">No match. Try another city or country.</li>'; return; }
     results.innerHTML = matches.map((c, i) =>
