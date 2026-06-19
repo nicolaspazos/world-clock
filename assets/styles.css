@@ -144,7 +144,7 @@ main{ position:relative; z-index:2; display:grid; grid-template-columns:1fr; gap
     linear-gradient(180deg, #0a1020, #070b16);
   overflow:hidden; box-shadow:var(--shadow);
 }
-#map{ display:block; width:100%; height:clamp(360px, 52vh, 620px); cursor:grab; }
+#map{ display:block; width:100%; height:clamp(470px, 68vh, 760px); cursor:grab; }
 #map.grabbing{ cursor:grabbing; }
 #map .land{ fill:var(--land); stroke:var(--land-edge); stroke-width:.5px; vector-effect:non-scaling-stroke; }
 #map .sphere{ fill:var(--ocean); }
@@ -328,7 +328,7 @@ main{ position:relative; z-index:2; display:grid; grid-template-columns:1fr; gap
   .home-clock{ font-size:22px; }
   .controls{ order:4; width:100%; }
   .map-panel{ padding:12px 13px 4px; }
-  #map{ height:clamp(260px, 40vh, 400px); }
+  #map{ height:clamp(340px, 54vh, 560px); }
   .board{ padding:10px 13px 40px; }
   .cards{ grid-template-columns:1fr; }
   .map-hint{ display:none; }
