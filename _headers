@@ -3,5 +3,13 @@
 /vendor/*
   Cache-Control: public, max-age=31536000, immutable
 
+# App code + page: always revalidate so a redeploy is picked up immediately
+# (no-cache = use cached copy only after checking it's still current via etag).
 /assets/*
-  Cache-Control: public, max-age=86400
+  Cache-Control: public, no-cache
+
+/index.html
+  Cache-Control: public, no-cache
+
+/
+  Cache-Control: public, no-cache

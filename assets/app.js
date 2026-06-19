@@ -562,7 +562,9 @@ function removeCity(id){
 }
 function addCity(id){
   if(state.cities.some(x => x.id === id)) return;
-  state.cities.push({ id, pinned:false, note:'' });
+  // Pinned by default: an added city is one you care about, so it locks in and
+  // shows its name tag on the map immediately. Unpin via the ⭐ for a temp look-up.
+  state.cities.push({ id, pinned:true, note:'' });
   if(WORLD) syncPins();
   saveState(); syncCards();
   refreshPinBase();
