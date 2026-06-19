@@ -94,9 +94,17 @@ body{
 .home-readout{
   display:flex; flex-direction:column; align-items:flex-end; gap:1px;
   padding:6px 16px; border-left:1px solid var(--line); border-right:1px solid var(--line);
+  cursor:pointer; background:transparent; border-top:none; border-bottom:none;
+  transition:background .15s ease; outline:none; font:inherit; color:inherit;
 }
-.home-label{ font-size:11px; color:var(--muted); letter-spacing:.4px; text-transform:uppercase; }
+.home-readout:hover, .home-readout:focus-visible{ background:rgba(245,177,61,0.06); }
+.home-readout:hover .home-label, .home-readout:focus-visible .home-label{ color:var(--glint-2); }
+.home-readout:hover .chev{ transform:translateY(1px); }
+.home-label{ font-size:11px; color:var(--muted); letter-spacing:.4px; text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:5px; transition:color .15s ease; }
 .home-label b{ color:var(--ink); font-weight:700; }
+.home-label .loc-ico{ color:var(--glint); opacity:.85; }
+.home-label .chev{ color:var(--faint); transition:transform .15s ease; }
 .home-clock{ font-family:var(--font-mono); font-size:26px; font-weight:700; letter-spacing:1px;
   color:var(--glint-2); line-height:1; font-variant-numeric:tabular-nums;
   text-shadow:0 0 18px rgba(245,177,61,0.35); }

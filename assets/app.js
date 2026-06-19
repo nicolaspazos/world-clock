@@ -394,7 +394,6 @@ function syncCards(){
 }
 
 function createCard(c, index){
-  const home = c.id === state.home;
   const el = document.createElement('article');
   el.className = 'card';
   el.dataset.id = c.id;
@@ -441,11 +440,10 @@ function createCard(c, index){
     strip: el.querySelector('.strip-slot')
   };
 
-  // home: lock controls
+  // Pin / remove handlers check the *current* home each click, so the lock
+  // (you can't unpin or remove your own location) follows whichever city is home.
   const pinBtn = el.querySelector('.pin-btn'), delBtn = el.querySelector('.del-btn');
-  if(home){ pinBtn.classList.add('pinned'); pinBtn.title = 'Home — always pinned'; delBtn.style.display = 'none'; }
-
-  pinBtn.addEventListener('click', (e) => { e.stopPropagation(); if(!home) togglePin(c.id); });
+  pinBtn.addEventListener('click', (e) => { e.stopPropagation(); if(c.id !== state.home) togglePin(c.id); });
   delBtn.addEventListener('click', (e) => { e.stopPropagation(); removeCity(c.id); });
   el.addEventListener('mouseenter', () => { setActive(c.id); });
   el.addEventListener('mouseleave', () => { setActive(null); });
@@ -499,8 +497,12 @@ function updateSlow(now, force){
     const entry = state.cities.find(x => x.id === id);
     r.note.textContent = entry?.note || '';
 
+    const isHome = id === state.home;
     const pinBtn = r.root.querySelector('.pin-btn');
-    if(id !== state.home) pinBtn.classList.toggle('pinned', !!entry?.pinned);
+    r.root.querySelector('.del-btn').style.display = isHome ? 'none' : '';
+    pinBtn.title = isHome ? 'Your location — always pinned' : 'Pin / lock this city';
+    if(isHome) pinBtn.classList.add('pinned');
+    else pinBtn.classList.toggle('pinned', !!entry?.pinned);
 
     r.strip.innerHTML = stripHTML(info, homeInfo, st);
   }
@@ -569,6 +571,22 @@ function addCity(id){
   saveState(); syncCards();
   refreshPinBase();
 }
+// Change "your location": all diffs, the planner overlap and the live readout
+// recompute from this city. Adds it to the board (pinned) if it isn't there yet.
+function setHome(id){
+  if(!byId[id] || id === state.home) return;
+  const existing = state.cities.find(x => x.id === id);
+  if(existing){ existing.pinned = true; }
+  else {
+    state.cities.push({ id, pinned:true, note:'' });
+    if(WORLD) syncPins();
+    refreshPinBase();
+  }
+  state.home = id;
+  saveState();
+  syncControls();
+  syncCards();
+}
 function resetDefaults(){
   if(!confirm('Reset to your default markets? Cities you added will be removed.')) return;
   state = structuredClone(DEFAULT_STATE);
@@ -603,9 +621,18 @@ function bindControls(){
   const scrim = document.getElementById('paletteScrim');
   const search = document.getElementById('paletteSearch');
   const results = document.getElementById('paletteResults');
-  let selIdx = 0, matches = [];
+  let selIdx = 0, matches = [], paletteMode = 'add';
 
-  function openPalette(){ scrim.hidden = false; search.value = ''; renderResults(''); search.focus(); }
+  function openPalette(mode){
+    paletteMode = (mode === 'home') ? 'home' : 'add';
+    scrim.hidden = false;
+    search.value = '';
+    search.placeholder = paletteMode === 'home'
+      ? 'Set your location — search any city…'
+      : 'Search a city or country…';
+    renderResults('');
+    search.focus();
+  }
   function closePalette(){ scrim.hidden = true; }
   function renderResults(q){
     const has = new Set(state.cities.map(c => c.id));
@@ -622,15 +649,23 @@ function bindControls(){
     results.innerHTML = matches.map((c, i) =>
       `<li data-id="${c.id}" class="${i===0?'sel':''}">
         <span class="r-city">${c.city}</span><span class="r-country">${c.country}</span>
-        ${has.has(c.id) ? '<span class="r-added">✓ added</span>' : `<span class="r-tz">${c.tz.split('/').pop().replace(/_/g,' ')}</span>`}
+        ${paletteMode==='home' && c.id===state.home ? '<span class="r-added">● your location</span>'
+          : has.has(c.id) ? '<span class="r-added">✓ added</span>'
+          : `<span class="r-tz">${c.tz.split('/').pop().replace(/_/g,' ')}</span>`}
       </li>`).join('');
   }
   function choose(i){
     const c = matches[i]; if(!c) return;
-    if(!state.cities.some(x => x.id === c.id)) addCity(c.id);
+    if(paletteMode === 'home') setHome(c.id);
+    else if(!state.cities.some(x => x.id === c.id)) addCity(c.id);
     closePalette();
   }
-  document.getElementById('addBtn').addEventListener('click', openPalette);
+  document.getElementById('addBtn').addEventListener('click', () => openPalette('add'));
+  const homeReadout = document.getElementById('homeReadout');
+  homeReadout.addEventListener('click', () => openPalette('home'));
+  homeReadout.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openPalette('home'); }
+  });
   scrim.addEventListener('click', (e) => { if(e.target === scrim) closePalette(); });
   search.addEventListener('input', () => renderResults(search.value));
   search.addEventListener('keydown', (e) => {

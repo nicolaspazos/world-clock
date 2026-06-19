@@ -33,8 +33,12 @@
     </span>
   </div>
 
-  <div class="home-readout" id="homeReadout" title="Your local time">
-    <span class="home-label">Your time · <b id="homeCity">Buenos Aires</b></span>
+  <div class="home-readout" id="homeReadout" role="button" tabindex="0" title="Click to change your location">
+    <span class="home-label">
+      <svg class="loc-ico" viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9" r="2.4" fill="currentColor"/></svg>
+      Your time · <b id="homeCity">Buenos Aires</b>
+      <svg class="chev" viewBox="0 0 24 24" width="11" height="11" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
     <span class="home-clock" id="homeClock">--:--:--</span>
     <span class="home-date" id="homeDate">—</span>
   </div>
