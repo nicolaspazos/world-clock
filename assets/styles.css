@@ -157,9 +157,14 @@ main{ position:relative; z-index:2; display:grid; grid-template-columns:1fr; gap
 .pin .core{ stroke:#05080f; stroke-width:1px; vector-effect:non-scaling-stroke; }
 .pin .ring{ fill:none; stroke:var(--glint); stroke-width:1.4px; vector-effect:non-scaling-stroke; opacity:.95; }
 .pin.home .ring{ stroke:var(--glint-2); }
-.pin-label{ font-family:var(--font-ui); font-size:11px; font-weight:700; fill:#eaf0fb;
-  paint-order:stroke; stroke:#05080f; stroke-width:3px; stroke-linejoin:round;
-  pointer-events:none; letter-spacing:.2px; }
+.pin-tag{ pointer-events:none; }
+.pin-tag .tag-bg{ fill:rgba(9,13,26,0.88); stroke:rgba(150,170,210,0.30);
+  stroke-width:1px; vector-effect:non-scaling-stroke; }
+.pin-label{ font-family:var(--font-ui); font-size:11px; font-weight:700; fill:#eef2fb;
+  letter-spacing:.2px; }
+.pin.home .pin-tag .tag-bg{ fill:rgba(42,29,7,0.9); stroke:rgba(245,177,61,0.6); }
+.pin.home .pin-label{ fill:var(--glint-2); }
+.pin.active .pin-tag .tag-bg{ stroke:rgba(245,177,61,0.85); }
 .pin.dim{ opacity:.34; transition:opacity .2s ease; }
 .pin.active .core{ stroke:#fff; stroke-width:1.5px; }
 

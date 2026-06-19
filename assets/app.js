@@ -255,8 +255,9 @@ function syncPins(){
   enter.append('circle').attr('class','halo').attr('r', 9);
   enter.append('circle').attr('class','core').attr('r', 4.2);
   enter.append('circle').attr('class','ring').attr('r', 7).attr('display','none');
-  enter.append('text').attr('class','pin-label').attr('x', 0).attr('y', -12)
-    .attr('text-anchor','middle').attr('display','none');
+  const tag = enter.append('g').attr('class','pin-tag').attr('display','none');
+  tag.append('rect').attr('class','tag-bg').attr('rx', 6).attr('ry', 6);
+  tag.append('text').attr('class','pin-label').attr('text-anchor','middle').attr('dy','0.32em');
   placePins();
   colorPins(new Date());
 }
@@ -273,6 +274,21 @@ function placePins(){
 }
 function refreshPinBase(){ for(const k in pinBase) delete pinBase[k]; placePins(); }
 
+// Draw / size the name tag (pill + text) for a pinned city; hide it otherwise.
+function layoutTag(g, c, show){
+  const tag = g.select('.pin-tag');
+  if(!show){ tag.attr('display', 'none'); return; }
+  tag.attr('display', null);
+  const text = tag.select('.pin-label').text(c.city);
+  let w = c.city.length * 6.4;                 // fallback estimate before layout
+  try { const m = text.node().getComputedTextLength(); if(m) w = m; } catch(e){}
+  const padX = 8, h = 19, cy = -16;            // tag sits just above the dot
+  text.attr('x', 0).attr('y', cy);
+  tag.select('.tag-bg')
+    .attr('x', -(w/2 + padX)).attr('y', cy - h/2)
+    .attr('width', w + padX*2).attr('height', h);
+}
+
 function colorPins(now){
   if(!pinLayer) return;
   const sp = subsolarPoint(now);
@@ -287,7 +303,7 @@ function colorPins(now){
     const pinned = entry?.pinned || id === state.home;
     g.classed('home', id === state.home);
     g.select('.ring').attr('display', pinned ? null : 'none');
-    g.select('.pin-label').attr('display', pinned ? null : 'none').text(c.city);
+    layoutTag(g, c, pinned);
     g.raise();
   });
   if(activeId) pinLayer.select(null); // no-op keep
