@@ -28,9 +28,9 @@ request is Google Fonts, which degrades gracefully to system fonts if blocked.
   onto their clock. Where green meets the dashed band = the call window.
 - **DST-correct** — times come from the browser's IANA timezone engine, so daylight
   saving is always right (no offset tables to maintain).
-- **Add any city** — press **A** or click *Add city* for a search palette over **300+
-  cities covering every country** (search by city, country, or common alias — "usa",
-  "uk", "holland" all work). Pin it to lock it, or leave it as a temporary look-up.
+- **Add any city** — press **A** or click *Add city* for a search palette over **500
+  cities — every country, plus 2+ per US state** (search by city, country, or common
+  alias — "usa", "uk", "holland" all work). Pin it to lock it, or leave it temporary.
 - **Controls** — set your working hours, toggle 12/24h, sort by pinned / their time /
   best-to-call, and filter to "only reachable now."
 
