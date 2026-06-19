@@ -43,6 +43,10 @@
 }
 
 *{ box-sizing:border-box; }
+/* The [hidden] attribute MUST win over component display rules — the overlay
+   panels (.pop-scrim / .palette-scrim) set display:grid, which would otherwise
+   override hidden and render them on load, blocking the whole page. */
+[hidden]{ display:none !important; }
 html,body{ margin:0; height:100%; }
 body{
   background:
