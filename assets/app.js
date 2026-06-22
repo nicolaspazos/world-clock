@@ -234,8 +234,10 @@ function buildMap(){
 function drawTerminator(now){
   if(!gNight) return;
   const sp = subsolarPoint(now);
-  const anti = [ ((sp.lng + 360) % 360) - 180 + 180, -sp.lat ];
-  if(anti[0] > 180) anti[0] -= 360;
+  // Antisolar point (where it's midnight) = antipode of the sun. The night
+  // hemisphere is the 90°-radius circle around it; that's what we shade dark.
+  const antiLng = ((sp.lng + 180 + 540) % 360) - 180;
+  const anti = [ antiLng, -sp.lat ];
   const night = d3.geoCircle().center(anti).radius(90)();
   gNight.attr('d', path(night));
   const sc = projection([sp.lng, sp.lat]);
