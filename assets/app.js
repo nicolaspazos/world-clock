@@ -334,11 +334,14 @@ function showTip(id){
     `<div class="tt-status s-${st}">${STATUS_LABEL[st]}</div>`;
   const pinNode = pinLayer.selectAll('g.pin').filter(d => d === id).node();
   if(!pinNode){ return; }
-  const r = pinNode.getBoundingClientRect();
+  // Anchor to the pin DOT itself (not the group box, which now includes the
+  // name-tag pill) so the tooltip sits right at the location, not high above it.
+  const dot = pinNode.querySelector('.core') || pinNode;
+  const r = dot.getBoundingClientRect();
   const s = stageEl.getBoundingClientRect();
   tipEl.hidden = false;
   tipEl.style.left = (r.left + r.width/2 - s.left) + 'px';
-  tipEl.style.top  = (r.top - s.top) + 'px';
+  tipEl.style.top  = (r.top + r.height/2 - s.top) + 'px';
 }
 function hideTip(){ tipEl.hidden = true; }
 
