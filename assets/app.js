@@ -60,6 +60,15 @@ function loadState(){
       const s = JSON.parse(raw);
       // keep only cities that still exist in the DB
       s.cities = (s.cities || []).filter(c => byId[c.id]);
+      // migration: scrub any legacy note text from a saved state (idempotent)
+      let migrated = false;
+      for(const c of s.cities){
+        if(c.note && /two\s*dot/i.test(c.note)){
+          c.note = c.note.replace(/two\s*dot\s*media/ig, '').replace(/^[\s·,–-]+/, '').trim() || 'US · East Coast';
+          migrated = true;
+        }
+      }
+      if(migrated){ try{ localStorage.setItem(LS_KEY, JSON.stringify(s)); }catch(e){} }
       if(!s.cities.some(c => c.id === s.home)) s.home = s.cities[0]?.id || DEFAULT_STATE.home;
       return Object.assign(structuredClone(DEFAULT_STATE), s);
     }

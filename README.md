@@ -12,7 +12,7 @@ request is Google Fonts, which degrades gracefully to system fonts if blocked.
 
 ## What it does
 
-- **Pinned markets** — your locked cities (Buenos Aires, US/Two Dot, Dubai, Singapore,
+- **Pinned markets** — your locked cities (Buenos Aires, US, Dubai, Singapore,
   Sydney, London) always show, in order, and survive reloads.
 - **Live map** — equirectangular world map with a real-time **day/night terminator**.
   Pins are color-coded by status. Scroll to zoom, drag to pan. Hover a pin or card to

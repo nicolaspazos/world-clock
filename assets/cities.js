@@ -546,7 +546,7 @@ const DEFAULT_STATE = {
   sort: 'pinned',
   cities: [
     { id:'buenos-aires', pinned:true, note:'Home base' },
-    { id:'new-york',     pinned:true, note:'Two Dot Media · US ET' },
+    { id:'new-york',     pinned:true, note:'US · East Coast' },
     { id:'dubai',        pinned:true, note:'Medical · Holdings' },
     { id:'singapore',    pinned:true, note:'Marine · Finance' },
     { id:'sydney',       pinned:true, note:'Paving · AU' },
